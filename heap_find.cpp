@@ -87,22 +87,6 @@
 // C++ includes
 #include <vector>
 
-int _pid = 0;
-
-mach_port_t get_task_by_pid(int pid)
-{
-    mach_port_t task;
-    kern_return_t rc;
-    rc = task_for_pid(mach_task_self(), _pid, &task);
-
-    if (rc)
-    {
-        fprintf (stderr, "task_for_pid() failed with error %d - %s\n", rc, mach_error_string(rc));
-        exit(1);
-    }    
-    return task;    
-}
-
 //----------------------------------------------------------------------
 // Redefine private types from "/usr/local/include/stack_logging.h"
 //----------------------------------------------------------------------
@@ -725,7 +709,6 @@ enumerate_range_in_zone (void *baton, const malloc_zone_t *zone)
     if (zone && zone->introspect){
         printf("zone:%p\n", zone);
 
-        mach_port_t task = get_task_by_pid(_pid);
         zone->introspect->enumerator (mach_task_self(), 
                                       info, 
                                       MALLOC_PTR_IN_USE_RANGE_TYPE, 
@@ -1117,25 +1100,6 @@ find_block_for_address (const void *addr, int check_vm_regions)
 #include <stdio.h>
 int main(int argc, char** argv)
 {
-
-    if (!argv[1])
-    {
-        printf ("Usage: %s <PID>\n", argv[0]);
-        exit (1);
-    }
-    _pid = atoi(argv[1]);
-
-    mach_port_t task;
-    kern_return_t rc;
-    rc = task_for_pid(mach_task_self(), _pid, &task);
-
-    if (rc)
-    {
-        fprintf (stderr, "task_for_pid() failed with error %d - %s\n", rc, mach_error_string(rc));
-        exit(1);
-    }    
-    printf ("RC %d - Task: %d\n", rc, task);
-
     printf("press enter to continue..");
     getchar();
 
