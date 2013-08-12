@@ -943,9 +943,9 @@ find_pointer_in_heap (const void * addr, int check_vm_regions)
         data_info.unique = false;                    // Set to true when iterating on the vm_regions
         range_callback_info_t info = { enumerate_range_in_zone, range_info_callback, &data_info, check_vm_regions };
         foreach_zone_in_this_process (&info);
-        
-        
     }
+
+    g_matches.dump();
     return g_matches.data();
 }
 
@@ -1072,6 +1072,8 @@ find_cstring_in_heap (const char *s, int check_vm_regions)
     data_info.unique = false;                // Set to true when iterating on the vm_regions
     range_callback_info_t info = { enumerate_range_in_zone, range_info_callback, &data_info, check_vm_regions };
     foreach_zone_in_this_process (&info);
+
+    g_matches.dump();
     return g_matches.data();
 }
 
@@ -1110,9 +1112,7 @@ int main(int argc, char** argv)
     memcpy(buf, "hello", 6);
     *(void**)(buf + 0x20) = buf;
     find_cstring_in_heap("hello", 0);
-    g_matches.dump();
     find_pointer_in_heap(buf, 0);
-    g_matches.dump();
 
     return 0;
 }
